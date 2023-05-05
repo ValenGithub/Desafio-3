@@ -4,7 +4,7 @@ import ProductManager from './models/ProductManager.js';
 
 // Creamos la aplicación
 const app = express();
-const productManager = new ProductManager("../products.json");
+const productManager = new ProductManager("./products.json");
 
 app.use(express.json());
 // Utilizamos el middleware para parsear los datos de la petición
@@ -23,9 +23,10 @@ app.get('/api/products', async ( req, res) => {
   	}
 });
 
-app.get('/api/products/:pid', (req, res) => {
+app.get('/api/products/:pid', async (req, res) => {
 	try {
-		res.send(productManager.getProductById(req.params.pid));
+		let productoSolicitado = await productManager.getProductById(parseInt(req.params.pid))
+		res.send({ producto: productoSolicitado });
 	} catch (err) {
 		res.status(400).send({ err });
 	}

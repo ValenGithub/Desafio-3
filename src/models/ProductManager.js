@@ -5,7 +5,7 @@ export default class ProductManager {
     
     constructor(path){          //funcion constructora donde se almacenaran los productos
         this.id = 0;
-        this.path = './products.json'
+        this.path = path
         if(!fs.existsSync(this.path)){
             fs.promises.writeFile(this.path, JSON.stringify([]))
         }              
@@ -51,7 +51,7 @@ export default class ProductManager {
 
     async getProductById(id){                 //funcion para obtener el producto mediante el id por parametro
         
-        const productosActuales = await this.getProducts();
+        let productosActuales = await this.getProducts();
         for (let i = 0 ; i < productosActuales.length; i++){
             if (productosActuales[i].id === id){
                 return productosActuales[i]
@@ -98,16 +98,16 @@ export default class ProductManager {
 
 
 //PRUEBAS
-const products = new ProductManager("../products.json");
+const products = new ProductManager("./products.json");
 
 
 
 const prueba = async () => {
     try{
-       await products.addProduct({title: 'cubiertas', description:'redonda', price: 20000, thumbnail:'asd', code:1234, stock: 1 });
-       await products.addProduct({title: 'llanta', description:'metalica', price: 28000, thumbnail:'asdasd', code:12345, stock: 123 });
-       await products.addProduct({title: 'gomita', description:'cuadrado', price: 228000, thumbnail:'qwerty', code:123456, stock: 13 });
-       console.log(await products.getProducts());
+       //await products.addProduct({title: 'cubiertas', description:'redonda', price: 20000, thumbnail:'asd', code:1234, stock: 1 });
+       //await products.addProduct({title: 'llanta', description:'metalica', price: 28000, thumbnail:'asdasd', code:12345, stock: 123 });
+       //await products.addProduct({title: 'gomita', description:'cuadrado', price: 228000, thumbnail:'qwerty', code:123456, stock: 13 });
+       //console.log(await products.getProductById(2));
        
     }
     catch (err){
