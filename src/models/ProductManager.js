@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 export default class ProductManager {
-   
+       
     
     constructor(path){          //funcion constructora donde se almacenaran los productos
         this.id = 0;
@@ -16,7 +16,7 @@ export default class ProductManager {
     async getProducts() {  
         try{
             const productosActuales = await fs.promises.readFile(this.path, 'utf-8')
-            console.log(productosActuales)
+            //console.log(productosActuales)
             return JSON.parse(productosActuales);       
         }
         catch(err){
