@@ -1,0 +1,21 @@
+<h1 class="productListTitle">Listado de Productos</h1>
+
+<h4>Los productos agregados hasta el momento son:</h4>
+
+<div class="productListContainer">
+    <ul class="productList">
+        {{#each renderProdList}}
+        <li class="productTitle">{{this.title}} 
+            <ul class="productDesc">
+              <li>Descripción: {{this.description}}</li>
+              <li>Precio: {{this.price}}</li>
+              <li>Stock: {{this.stock}}</li>
+              <li>Código: {{this.code}}</li>
+              <li>Categoría: {{this.category}}</li>
+            </ul>
+        </li>
+        {{/each}}
+    </ul>
+</div>
+
+<script src="/js/index.js"></script>

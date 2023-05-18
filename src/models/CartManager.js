@@ -82,17 +82,21 @@ export default class CartManager{
       return null;
     }
   
-    if (productIndex === -1) {
-      // Si no se encuentra el producto en el carrito, se agrega uno nuevo con cantidad 1
-      carts[cartIndex].productos.push({ product: idProductoBuscado, quantity: cantidad });
-    } else {
-      // Si se encuentra el producto en el carrito, se actualiza su cantidad sumando 1
-      carts[cartIndex].productos[productIndex].quantity += 1;
+    try{
+      if (productIndex === -1) {
+        // Si no se encuentra el producto en el carrito, se agrega uno nuevo con cantidad 1
+        carts[cartIndex].productos.push({ product: idProductoBuscado, quantity: cantidad });
+      } else {
+        // Si se encuentra el producto en el carrito, se actualiza su cantidad sumando 1
+        carts[cartIndex].productos[productIndex].quantity += 1;
+      }
+    
+      // Guardar los cambios en el archivo
+      await fs.promises.writeFile(this.path, JSON.stringify(carts));
+      return carts[cartIndex]
+    }catch(err){
+      console.log('No se pudo agregar el producto')
     }
-  
-    // Guardar los cambios en el archivo
-    await fs.promises.writeFile(this.path, JSON.stringify(carts));
-    return this.carts[cartIndex].productos
   }
 
 

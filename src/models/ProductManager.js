@@ -1,11 +1,15 @@
 import fs from 'fs';
+import { Server } from "socket.io";
+
 
 export default class ProductManager {
        
     
-    constructor(path){          //funcion constructora donde se almacenaran los productos
+    constructor(path, io){          //funcion constructora donde se almacenaran los productos
         this.id = 0;
         this.path = path
+        this.io = io;
+        
         if(!fs.existsSync(this.path)){
             fs.promises.writeFile(this.path, JSON.stringify([]))
         }              
@@ -38,6 +42,8 @@ export default class ProductManager {
             const newProduct = { ...product, id: newId }
             productosActuales.push(newProduct)
             await fs.promises.writeFile(this.path, JSON.stringify(productosActuales))
+
+            
            
         } 
         catch(err){
@@ -80,7 +86,7 @@ export default class ProductManager {
             this.path,
           JSON.stringify(productosActuales)
         );
-      
+
         return productosActuales[productIndex];
     }
 
@@ -89,6 +95,9 @@ export default class ProductManager {
         const nuevoArrayProductos = productosActuales.filter(producto => producto.id !== id);
         await fs.promises.writeFile(this.path, JSON.stringify(nuevoArrayProductos));
         console.log("Producto eliminado correctamente");
+
+        
+
         return nuevoArrayProductos;
     }
  
