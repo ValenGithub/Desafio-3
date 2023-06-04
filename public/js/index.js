@@ -10,7 +10,7 @@ function render(data) {
               <li>Precio: ${prod.price}</li>
               <li>Stock: ${prod.stock}</li>
               <li>Código: ${prod.code}</li>
-              <li>Categoría: ${prod.category}</li>
+              <li>Imagen: ${prod.thumbnail}</li>
             </ul>
         </li>`;
     });
@@ -26,3 +26,15 @@ function render(data) {
   socket.on("updatedProducts", (data) => {
     render(data);
   });
+
+  function enviarEmail() {
+    const email = document.getElementById('emailInput').value;
+    if (email.trim() === '') {
+      Swal.fire('Error', 'Debe ingresar un email válido', 'error');
+      return;
+    }
+  
+    socket.emit('email', email);
+  
+    Swal.fire('¡Email guardado!', 'Su email ha sido guardado exitosamente', 'success');
+  }

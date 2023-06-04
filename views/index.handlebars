@@ -3,7 +3,7 @@
 <h4>Los productos agregados hasta el momento son:</h4>
 
 <div class="productListContainer">
-    <ul class="productList">
+    <ul id="productList">
         {{#each renderProdList}}
         <li class="productTitle">{{this.title}} 
             <ul class="productDesc">
@@ -11,7 +11,7 @@
               <li>Precio: {{this.price}}</li>
               <li>Stock: {{this.stock}}</li>
               <li>Código: {{this.code}}</li>
-              <li>Categoría: {{this.category}}</li>
+              <li>Imagen: {{this.thumbnail}}</li>
             </ul>
         </li>
         {{/each}}

@@ -1,18 +1,22 @@
 import Router from "express";
-import ProductManager from "../models/ProductManager.js";
+import productService from "../dao/product.service.js";
+
 
 const viewsRouter = Router();
-const productManager = new ProductManager("./products.json");
 
 viewsRouter.get("/", async (req, res) => {
-  const renderProdList = await productManager.getProducts();
-  console.log(renderProdList)
+  const renderProdList = await productService.obtenerProductos();
   res.render("index", { renderProdList });
 });
 
 viewsRouter.get("/realtimeproducts", async (req, res) => {
-    const renderProdList = await productManager.getProducts();
+    const renderProdList = await productService.obtenerProductos();
     res.render("realTimeProducts", { renderProdList });
-  });
+});
+
+viewsRouter.get('/chat', (req, res) => {
+	// Renderizamos la vista index
+	res.render('chat');
+});
 
 export default viewsRouter;
