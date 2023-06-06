@@ -27,14 +27,4 @@ function render(data) {
     render(data);
   });
 
-  function enviarEmail() {
-    const email = document.getElementById('emailInput').value;
-    if (email.trim() === '') {
-      Swal.fire('Error', 'Debe ingresar un email válido', 'error');
-      return;
-    }
   
-    socket.emit('email', email);
-  
-    Swal.fire('¡Email guardado!', 'Su email ha sido guardado exitosamente', 'success');
-  }

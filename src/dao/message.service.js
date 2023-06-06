@@ -1,6 +1,6 @@
 import  { ChatModel }  from '../dao/models/chatModel.js'
 
-class MessageService {
+export default class MessageService {
   constructor(io) {
     this.io = io;
   }
@@ -16,16 +16,16 @@ class MessageService {
 
   async guardarMensaje(user, message) {
     try {
-      const nuevoMensaje = new chatModel({ user, message });
+      const nuevoMensaje = new ChatModel({ user, message });
       await nuevoMensaje.save();
-      this.io.emit('message', { user, message }); // Emitir el nuevo mensaje a todos los clientes conectados
+      this.io.emit('messages', await this.obtenerMensajes()); // Emitir el nuevo mensaje a todos los clientes conectados
     } catch (error) {
       throw error;
     }
   }
 }
 
-const messageService = new MessageService();
-export default messageService;
+// const messageService = new MessageService();
+// export default messageService;
 
 

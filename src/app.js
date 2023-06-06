@@ -7,9 +7,10 @@ import handlebars from "express-handlebars";
 import viewsRouter from "./routes/views.router.js"
 import { Server } from "socket.io";
 import productService from './dao/product.service.js';
+import MessageService from './dao/message.service.js';
 import mongoose from 'mongoose';
 
-
+const messages = [];
 // Creamos la aplicación
 const app = express();
 //const productManager = new ProductManager("./products.json");
@@ -42,21 +43,23 @@ const httpServer = app.listen(8080, () => {
   console.log("Listening in 8080"); //Check de que el servidor se encuentra funcionando en el puerto 8080.
 });
 const io = new Server(httpServer);
+const messageService = new MessageService(io);
   
   io.on("connection", async (socket) => {
     try{
         console.log("Nuevo cliente conectado!");
         socket.emit("productList", await productService.obtenerProductos());
-              // Envio los mensajes al cliente que se conectó
-         socket.emit('messages', messages);
+        socket.emit('messages', await messageService.obtenerMensajes());
+        // Envio los mensajes al cliente que se conectó
 
         // Escucho los mensajes enviado por el cliente y se los propago a todos
-        socket.on('message', (message) => {
+        socket.on('message', async(message) => {
           console.log(message);
           // Agrego el mensaje al array de mensajes
-          messages.push(message);
-          // Propago el evento a todos los clientes conectados
-          io.emit('messages', messages);
+          const { user, msj } = message;
+          await messageService.guardarMensaje(user, msj);
+          const mensajes = await messageService.obtenerMensajes();
+          socket.emit('messages', mensajes);
         });
 
         socket.on('sayhello', (data) => {

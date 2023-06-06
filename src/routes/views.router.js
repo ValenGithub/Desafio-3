@@ -1,7 +1,6 @@
 import Router from "express";
 import productService from "../dao/product.service.js";
 
-
 const viewsRouter = Router();
 
 viewsRouter.get("/", async (req, res) => {
@@ -14,8 +13,7 @@ viewsRouter.get("/realtimeproducts", async (req, res) => {
     res.render("realTimeProducts", { renderProdList });
 });
 
-viewsRouter.get('/chat', (req, res) => {
-	// Renderizamos la vista index
+viewsRouter.get('/chat', async (req, res) => {
 	res.render('chat');
 });
 
