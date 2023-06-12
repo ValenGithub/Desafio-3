@@ -15,7 +15,7 @@ function render(data) {
         </li>`;
     });
     //productList.getElementById('productList').innerHTML = newList;
-    productList.innerHTML = newList.join("");
+    productList.innerHTML = newList
   }
   
   socket.on("productList", async (data) =>{
@@ -27,4 +27,21 @@ function render(data) {
     render(data);
   });
 
+  socket.on('cartId', (cartId) => {
+    // Guardar el ID del carrito en el Local Storage
+    localStorage.setItem('cartId', cartId);
+  });
+
+  const cartId = localStorage.getItem('cartId');
+
+// Obtener todos los botones "agregar al carrito"
+const agregarProductoBotones = document.querySelectorAll('.btn-add-to-cart');
+agregarProductoBotones.forEach((boton) => {
+  boton.addEventListener('click', () => {
+    const productId = boton.dataset.productId;
+
+    // Enviar el ID del carrito y el ID del producto al servidor a través de Socket.IO
+    socket.emit('agregarProducto', { cartId, productId });
+  });
+});
   

@@ -40,11 +40,23 @@ input {
 	overflow-y: scroll;
 }
 
-  
-  
 #Title {
 	font-size: 24px;
 	font-weight: bold;
 	margin-bottom: 20px;
 	text-align: center;
   }
+  
+
+.card-container {
+    margin: 10px;
+    padding: 10px;
+}
+
+.card {
+    margin: 10px;
+    padding: 10px;
+}
+ 
+  
+  

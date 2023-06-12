@@ -18,6 +18,7 @@ productsRouter.get('/', async (req, res) => {
 	}
 });
 
+
 productsRouter.post('/', async (req, res) => {
 	try {
 		const product = await productService.agregarProducto(req.body);

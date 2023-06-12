@@ -1,4 +1,4 @@
-import { productModel } from '../dao/models/productModel.js';
+import  productModel  from '../dao/models/productModel.js';
 
 class ProductService {
 	constructor(io) {
@@ -7,8 +7,31 @@ class ProductService {
 	}
 
 	async obtenerProductos() {
-		return await this.model.find();
+		return await this.model.find().lean();
 	}
+
+	async obtenerProductosPaginados(limit = 10, page = 1, sort = 'asc', query = 'all') {
+		try {
+		  const filter = {};
+		  if (query === 'true') {
+			filter.stock = { $gt: 0 };
+		  } else if (query === 'false') {
+			filter.stock = { $lte: 0 };
+		  }
+		  const options = {
+			lean: true,
+			page,
+			limit,
+			sort: { price: sort === 'desc' ? -1 : 1 },
+		  };
+	  
+		  const result = await this.model.paginate(filter, options);
+		  return result;
+		} catch (error) {
+		  console.error(error);
+		  throw new Error('Error al obtener los productos');
+		}
+	  }
 
 	async agregarProducto(product) {
 		if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock ) {

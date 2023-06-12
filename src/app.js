@@ -9,6 +9,7 @@ import { Server } from "socket.io";
 import productService from './dao/product.service.js';
 import MessageService from './dao/message.service.js';
 import mongoose from 'mongoose';
+import CartService from './dao/cart.service.js';
 
 const messages = [];
 // Creamos la aplicación
@@ -45,31 +46,51 @@ const httpServer = app.listen(8080, () => {
 const io = new Server(httpServer);
 const messageService = new MessageService(io);
   
-  io.on("connection", async (socket) => {
-    try{
-        console.log("Nuevo cliente conectado!");
-        socket.emit("productList", await productService.obtenerProductos());
-        socket.emit('messages', await messageService.obtenerMensajes());
-        // Envio los mensajes al cliente que se conectó
+io.on("connection", async (socket) => {
+  try {
+    console.log("New client connected!");
 
-        // Escucho los mensajes enviado por el cliente y se los propago a todos
-        socket.on('message', async(message) => {
-          console.log(message);
-          // Agrego el mensaje al array de mensajes
-          const { user, msj } = message;
-          await messageService.guardarMensaje(user, msj);
-          const mensajes = await messageService.obtenerMensajes();
-          socket.emit('messages', mensajes);
-        });
+    socket.emit("productList", await productService.obtenerProductos());
+    socket.emit('messages', await messageService.obtenerMensajes());
 
-        socket.on('sayhello', (data) => {
-          socket.broadcast.emit('connected', data);
-        });
-        
-    }catch(err){
-        console.log(err)
-    }
-    
-  });
+    socket.on('agregarProducto', async ({ cartId, productId }) => {
+      try {
+        const carrito = await CartService.obtenerCarritoById(cartId);
+        const producto = await productService.obtenerProductoById(productId);
+
+        const productoExistente = carrito.products.find(item => item.product.toString() === productId);
+  
+        if (productoExistente) {
+          productoExistente.quantity += 1;
+        } else {
+          carrito.products.push({
+            product: producto._id,
+            quantity: 1
+          });
+        }
+  
+        await carrito.save();
+  
+        socket.emit('carritoActualizado', carrito);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    socket.on('message', async (message) => {
+      console.log(message);
+      const { user, msj } = message;
+      await messageService.guardarMensaje(user, msj);
+      const nuevosMensajes = await messageService.obtenerMensajes();
+      socket.emit('messages', nuevosMensajes);
+    });
+
+    socket.on('sayhello', (data) => {
+      socket.broadcast.emit('connected', data);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 
