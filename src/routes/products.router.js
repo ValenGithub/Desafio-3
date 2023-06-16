@@ -59,6 +59,7 @@ productsRouter.get('/:pid', async (req, res) => {
     res.status(400).send({ err });
   }
 });
+export { productsRouter };
 
 //METODOS ANTERIORES
 
@@ -131,4 +132,3 @@ productsRouter.get('/:pid', async (req, res) => {
 //     }
 // });
 
-export { productsRouter };

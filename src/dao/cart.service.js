@@ -1,4 +1,5 @@
 import { cartModel } from '../dao/models/cartModel.js';
+import productModel from '../dao/models/productModel.js';
 import productService from './product.service.js';
 
 class cartService {
@@ -6,9 +7,8 @@ class cartService {
 		this.model = cartModel;
 	}
 
-	async agregarCarrito(cart) {
-		cart.products = [];
-		return await this.model.create(cart);
+	async agregarCarrito() {
+		return await this.model.create({ products: [] });
 	}
 
 	async obtenerCarritos() {
@@ -38,27 +38,37 @@ class cartService {
 	  
 	// 	return await carrito.save();
 	// }
-	async agregarProductoCarrito(prodId) {
-		const carrito = JSON.parse(localStorage.getItem('carrito')) || { products: [] };
-		const producto = await productService.obtenerProductoById(prodId);
+	async agregarProductoCarrito(cid,pid) {
+		try {
+			const cart = await this.model.findById(cid);
+			console.log(cart)
+			if (!cart) {
+			  throw new Error("No existe el carrito buscado");
+			}
 	  
-		const productoExistente = carrito.products.find(
-		  (item) => item.product.toString() === prodId
-		);
+			const product = await productModel.findById(pid);
+			console.log(product);
 	  
-		if (productoExistente) {
-		  productoExistente.quantity += 1;
-		} else {
-		  carrito.products.push({
-			product: producto._id,
-			quantity: 1
-		  });
-		}
+			if (!product) {
+			  throw new Error("No existe el producto buscado");
+			}
 	  
-		localStorage.setItem('carrito', JSON.stringify(carrito));
+			const index = cart.products.findIndex((producto) => {
+			  return producto.product.toString() === pid;
+			});
 	  
-		return carrito;
-	  }
+			if (index === -1) {
+			  cart.products.push({ product: pid, quantity: 1 });
+			} else {
+			  cart.products[index].quantity += 1;
+			}
+	  
+			await cart.save();
+			return cart;
+		  } catch (error) {
+			throw new Error(`No se pudo agregar producto al carrito: ${error}`);
+		  }
+	}
 
 	async vaciarCarrito(cartId) {
 		const carrito = await this.model.findOne({ _id: cartId });

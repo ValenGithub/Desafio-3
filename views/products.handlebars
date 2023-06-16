@@ -21,13 +21,15 @@
                                 <li><b>Stock:</b> {{this.stock}}</li>
                                 <li><b>Código:</b> {{this.code}}</li>
                             </ul>
-                            <button class="btn btn-primary btn-add-to-cart" onclick="agregarProductoCarrito('{{this._id}}')">Agregar al carrito</button>
+                            <button class="btn btn-primary btn-add-to-cart" data-product-id="{{_id}}">Agregar al carrito</button>
                         </div>
                     </div>
                 </div>
                 {{/each}}
             </div>
         </div>
+
+        <div id="bodyproducts"></div>
 
         <div class="col-12 text-center">
             <nav>

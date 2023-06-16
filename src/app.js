@@ -53,29 +53,22 @@ io.on("connection", async (socket) => {
     socket.emit("productList", await productService.obtenerProductos());
     socket.emit('messages', await messageService.obtenerMensajes());
 
+    try {
+      const cart = await CartService.agregarCarrito();
+      socket.emit('cartId', cart._id)
+    } catch (error) {
+      console.log(error)
+    }
+  
     socket.on('agregarProducto', async ({ cartId, productId }) => {
       try {
-        const carrito = await CartService.obtenerCarritoById(cartId);
-        const producto = await productService.obtenerProductoById(productId);
-
-        const productoExistente = carrito.products.find(item => item.product.toString() === productId);
-  
-        if (productoExistente) {
-          productoExistente.quantity += 1;
-        } else {
-          carrito.products.push({
-            product: producto._id,
-            quantity: 1
-          });
-        }
-  
-        await carrito.save();
-  
-        socket.emit('carritoActualizado', carrito);
-      } catch (err) {
-        console.log(err);
+        await CartService.agregarProductoCarrito(cartId,productId);
+        let cart = await CartService.obtenerCarritoById(cartId);
+        io.emit('Cartproducts', cart );
+      } catch (error) {
+        console.log(error)
       }
-    });
+    }); 
 
     socket.on('message', async (message) => {
       console.log(message);
