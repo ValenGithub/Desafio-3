@@ -3,6 +3,7 @@ import express from 'express';
 import { productsRouter } from './routes/products.router.js';
 import { cartsRouter } from './routes/carts.router.js';
 import { messageRouter } from './routes/chat.router.js';
+import { usersRouter } from './routes/user.router.js';
 import handlebars from "express-handlebars";
 import viewsRouter from "./routes/views.router.js"
 import { Server } from "socket.io";
@@ -10,6 +11,10 @@ import productService from './dao/product.service.js';
 import MessageService from './dao/message.service.js';
 import mongoose from 'mongoose';
 import CartService from './dao/cart.service.js';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import userService from './dao/user.service.js';
 
 const messages = [];
 // Creamos la aplicación
@@ -32,9 +37,33 @@ app.use((req, res, next) => {
   next();
 });
 
+
+// Middleware cookies parser
+//app.use(cookieParser());
+app.use(cookieParser('B2zdY3B$pHmxW%'));
+
+// Session
+app.use(
+	session({
+		store: MongoStore.create({
+			mongoUrl:
+      'mongodb+srv://valentinomoreschi:vm1013@cluster0.zqlrbgb.mongodb.net/?retryWrites=true&w=majority',
+			mongoOptions: {
+				useNewUrlParser: true,
+			},
+			ttl: 6000,
+		}),
+		secret: 'B2zdY3B$pHmxW%',
+		resave: true,
+		saveUninitialized: true,
+	})
+);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/chat', messageRouter);
+app.use('/api/users', usersRouter);
+
+
 
 mongoose.connect(
 	'mongodb+srv://valentinomoreschi:vm1013@cluster0.zqlrbgb.mongodb.net/?retryWrites=true&w=majority'
