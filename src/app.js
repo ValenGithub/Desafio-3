@@ -4,7 +4,7 @@ import { productsRouter } from './routes/products.router.js';
 import { cartsRouter } from './routes/carts.router.js';
 import { messageRouter } from './routes/chat.router.js';
 import { usersRouter } from './routes/user.router.js';
-import handlebars from "express-handlebars";
+import exphbs from "express-handlebars";
 import viewsRouter from "./routes/views.router.js"
 import { Server } from "socket.io";
 import productService from './dao/product.service.js';
@@ -15,6 +15,10 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import userService from './dao/user.service.js';
+import passport from 'passport';
+import inicializePassport from './config/passport.config.js';
+import sessionsRouter from './routes/sessions.router.js';
+
 
 const messages = [];
 // Creamos la aplicación
@@ -25,22 +29,21 @@ app.use(express.json());
 // Utilizamos el middleware para parsear los datos de la petición
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.engine('handlebars', handlebars.engine());
+app.engine('handlebars', exphbs.engine());
 app.set('views' , 'views/' );
 app.set('view engine','handlebars');
 
-app.use('/', viewsRouter);
-
 app.use((req, res, next) => {
-  req.productService = productService; // Pasamos el objeto productManager a cada solicitud
-  req.io = io; // Pasamos el objeto io a cada solicitud
+  res.locals.layout = 'main'; // Establecer el nombre del layout principal
   next();
 });
 
-
-// Middleware cookies parser
-//app.use(cookieParser());
-app.use(cookieParser('B2zdY3B$pHmxW%'));
+const initializeSession = (req, res, next) => {
+  if (!req.session.user) {
+    req.session.user = {}; // Inicializa el objeto de usuario en la sesión si no existe
+  }
+  next();
+};
 
 // Session
 app.use(
@@ -58,12 +61,25 @@ app.use(
 		saveUninitialized: true,
 	})
 );
+app.use(initializeSession);
+inicializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/', viewsRouter);
+
+app.use((req, res, next) => {
+  req.productService = productService; // Pasamos el objeto productManager a cada solicitud
+  req.io = io; // Pasamos el objeto io a cada solicitud
+  next();
+});
+
+app.use(cookieParser('B2zdY3B$pHmxW%'));
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/chat', messageRouter);
 app.use('/api/users', usersRouter);
-
-
+app.use('/api/sessions', sessionsRouter);
 
 mongoose.connect(
 	'mongodb+srv://valentinomoreschi:vm1013@cluster0.zqlrbgb.mongodb.net/?retryWrites=true&w=majority'

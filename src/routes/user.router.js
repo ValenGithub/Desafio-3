@@ -1,40 +1,36 @@
 import { Router } from 'express';
 import userService from '../dao/user.service.js';
+import passport from 'passport';
 
 const usersRouter = Router();
 
-usersRouter.post('/', async (req, res) => {
-	const userData = req.body;
-	try {
-		const newUser = await userService.createUser(userData);
-		res.status(201).json(newUser);
-	} catch (error) {
-		res.status(400).json({ error: error.message });
+usersRouter.post(
+	'/',
+	passport.authenticate('register'),
+	async (req, res) => {
+		res.redirect('/login');
 	}
-});
+);
 
-usersRouter.post('/auth', async (req, res) => {
-	const { email, password } = req.body;
-	try {
-		const user = await userService.getByEmail(email);
-		// Chequeo de datos
-		if (!user) throw new Error('Invalid data'); // Existe el usuario?
-		if (user.password !== password) throw new Error('Invalid data'); // La contraseña es correcta?
+usersRouter.post(
+	'/auth',
+	passport.authenticate('login'),
+	async (req, res) => {
+		// Verificamos que el usuario exista
+		if (!req.user) return res.status(400).send('No user found');
 
-		// Si todo está bien, guardo el usuario en la sesión
+		// Saco la contraseña y lo guardo en la sesion
+		const user = req.user;
+		delete user.password;
 		req.session.user = user;
 
-		//res.status(201).json(user);
+		// Redirecciono a la pagina principal
 		res.redirect('/products');
-	} catch (error) {
-		res.status(400).json({ error: error.message });
 	}
-});
+);
 
 usersRouter.post('/logout', (req, res) => {
-	req.session.destroy();
-	//res.status(200).json({ message: 'Logged out' });
+	req.session.destroy(); 
 	res.redirect('/login');
-});
-
+  });
 export { usersRouter };

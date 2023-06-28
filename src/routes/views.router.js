@@ -11,7 +11,7 @@ const viewsRouter = Router();
 // });
 
 viewsRouter.get("/products", async (req, res) => {
-  const { limit, page, sort, query } = req.query;
+  	const { limit, page, sort, query } = req.query;
 	const data = await productService.obtenerProductosPaginados(
 		limit,
 		page,
@@ -19,8 +19,7 @@ viewsRouter.get("/products", async (req, res) => {
     query
 	);
 
-  console.log(data)
-	res.render('products', data);
+	res.render('products', data );
 });
 
 viewsRouter.get("/realtimeproducts", async (req, res) => {
@@ -38,10 +37,33 @@ viewsRouter.get('/carts/:cid', async (req, res) => {
 	res.render('cart', { renderCart });
 });
 
-viewsRouter.get('/',async (req, res) => {
-	const { user } = req.session;
-	console.log(user)
+
+
+
+viewsRouter.get('/register', (req, res) => {
+	res.render('register', {
+		title: 'Registrar Nuevo Usuario',
+	});
+});
+
+viewsRouter.get('/login', (req, res) => {
+	if (req.isAuthenticated()) {
+		// Si ya hay una sesión activa, redirigir al usuario a otra página, como su perfil
+		return res.redirect('/');
+	}
+
+	res.render('login', {
+		title: 'Inicio de Sesión',
+	});
+});
+
+viewsRouter.get('/', isAuth, (req, res) => {
+	const user = { ...req.session.user };
 	delete user.password;
+	if (!req.isAuthenticated()) {
+		// Si ya hay una sesión activa, redirigir al usuario a otra página, como su perfil
+		return res.redirect('/login');
+	}
 	try{
 		res.render('index', {user});
 	}catch(err){
@@ -49,18 +71,19 @@ viewsRouter.get('/',async (req, res) => {
 	}	
 });
 
+viewsRouter.get('/admin', (req, res) => {
+	const user = { ...req.session.user };
+	delete user.password;
 
-viewsRouter.get('/register',(req, res) => {
-	res.render('register', {
-		title: 'Registrar Nuevo Usuario',
-	});
+	if (req.user.role === "admin") {
+		// El usuario tiene el rol de "admin"
+		// Realiza alguna acción para un usuario administrador
+		res.render('admin', {user});
+	  } else {
+		// El usuario no tiene el rol de "admin"
+		// Realiza alguna acción para un usuario no administrador
+		res.redirect('/')
+	  }
 });
-
-viewsRouter.get('/login',(req, res) => {
-	res.render('login', {
-		title: 'Inicio de Sesión',
-	});
-});
-
 
 export default viewsRouter;
