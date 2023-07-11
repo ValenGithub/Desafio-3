@@ -3,6 +3,7 @@ import local from 'passport-local';
 import GitHubStrategy from 'passport-github2';
 import userService from '../dao/user.service.js';
 import { comparePassword, hashPassword } from '../utils/encript.util.js';
+import CartService from '../dao/cart.service.js';
 
 
 
@@ -64,6 +65,12 @@ const inicializePassport = () => {
 						return done(null, false, { message: 'Revise los datos ingresados' });
 					}
 
+					if (!user.cart) {
+						const newCart = await CartService.agregarCarrito();
+						user.cart = newCart._id;
+						await user.save();
+					}
+
 					return done(null, user);
 				} catch (error) {
 					done(error);
@@ -94,6 +101,13 @@ const inicializePassport = () => {
 						};
 						user = await userService.createUser(newUser);
 						done(null, user);
+
+						if (!user.cart) {
+							const newCart = await CartService.agregarCarrito();
+							user.cart = newCart._id;
+							await user.save();
+						}
+
 					} else {
 						done(null, user);
 					}

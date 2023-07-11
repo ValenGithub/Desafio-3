@@ -97,13 +97,6 @@ io.on("connection", async (socket) => {
 
     socket.emit("productList", await productService.obtenerProductos());
     socket.emit('messages', await messageService.obtenerMensajes());
-
-    try {
-      const cart = await CartService.agregarCarrito();
-      socket.emit('cartId', cart._id)
-    } catch (error) {
-      console.log(error)
-    }
   
     socket.on('agregarProducto', async ({ cartId, productId }) => {
       try {

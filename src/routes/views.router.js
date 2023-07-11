@@ -86,4 +86,18 @@ viewsRouter.get('/admin', (req, res) => {
 	  }
 });
 
+viewsRouter.get('/current', isAuth, (req, res) => {
+	const user = { ...req.session.user };
+	delete user.password;
+	if (!req.isAuthenticated()) {
+		// Si ya hay una sesión activa, redirigir al usuario a otra página, como su perfil
+		return res.redirect('/login');
+	}
+	try{
+		res.render('index', {user});
+	}catch(err){
+		res.status(500).send(err)
+	}	
+});
+
 export default viewsRouter;
