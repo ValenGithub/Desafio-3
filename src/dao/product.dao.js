@@ -1,6 +1,6 @@
-import  productModel  from '../dao/models/productModel.js';
+import  productModel  from '../models/productModel.js';
 
-class ProductService {
+class ProductDao {
 	constructor(io) {
 		this.model = productModel;
 		this.io = io;
@@ -59,5 +59,5 @@ class ProductService {
 	}
 }
 
-const productService = new ProductService();
-export default productService;
+const productDao = new ProductDao();
+export default productDao;

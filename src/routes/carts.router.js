@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import CartService from '../dao/cart.service.js';
+import CartController from '../controllers/cart.controller.js';
 
 const cartsRouter = Router();
 //const cartManager = new CartManager();
@@ -8,7 +8,7 @@ const cartsRouter = Router();
 cartsRouter.post('/', async (req, res) => {
 	const carrito = req.body;
 	try {
-		const nuevoCarrito = await CartService.agregarCarrito(carrito);
+		const nuevoCarrito = await CartController.agregarCarrito(carrito);
 		res.status(201).send({ carritos: nuevoCarrito });
 	} catch (err) {
 		res.status(500).send({ err });
@@ -17,7 +17,7 @@ cartsRouter.post('/', async (req, res) => {
 
 cartsRouter.get('/', async (req, res) => {
 	try {
-		const carritos = await CartService.obtenerCarritos();
+		const carritos = await CartController.obtenerCarritos();
 		res.send(carritos);
 	} catch (err) {
 		res.status(500).send({ err });
@@ -25,7 +25,7 @@ cartsRouter.get('/', async (req, res) => {
 });
 
 cartsRouter.get('/:cid', async (req, res) => {
-	let cartItems = await CartService.obtenerCarritoById(req.params.cid); // Obtener los productos del carrito
+	let cartItems = await CartController.obtenerCarritoById(req.params.cid); // Obtener los productos del carrito
 	
 	res.send(cartItems); // Renderizar la vista del carrito y pasar los datos del carrito
 });
@@ -35,7 +35,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
 	const cartId = req.params.cid;
 	const productId = req.params.pid;
 	try {
-		const productAdded = await CartService.agregarProductoCarrito(
+		const productAdded = await CartController.agregarProductoCarrito(
 			cartId,
 			productId
 			);
@@ -48,7 +48,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
 	cartsRouter.delete('/:cid', async (req, res) => {
 		const cid = req.params.cid;
 		try {
-			await CartService.vaciarCarrito(cid);
+			await CartController.vaciarCarrito(cid);
 			res.sendStatus(204); 
 		} catch (err) {
 			res.status(500).send({ err });
@@ -59,7 +59,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
 		const cid = req.params.cid;
 		const pid = req.params.pid
 		try {
-			await CartService.eliminarProductoDeCarrito(cid, pid);
+			await CartController.eliminarProductoDeCarrito(cid, pid);
 			res.sendStatus(204); 
 		} catch (err) {
 			res.status(500).send({ err });
@@ -72,7 +72,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
 		const newQuantity = req.body.quantity;
 		
 		try {
-		  await CartService.actualizarCantidadProductoCarrito(cid, pid, newQuantity);
+		  await CartController.actualizarCantidadProductoCarrito(cid, pid, newQuantity);
 		  res.sendStatus(204);
 		} catch (err) {
 		  res.status(500).send({ err });
@@ -84,7 +84,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
 		const nuevoArray = req.body;
 		
 		try {
-		  await CartService.actualizarArrayCarrito(cid, nuevoArray);
+		  await CartController.actualizarArrayCarrito(cid, nuevoArray);
 		  res.sendStatus(204);
 		} catch (err) {
 			res.status(500).json({ error: err.message });

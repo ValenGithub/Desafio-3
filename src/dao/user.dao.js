@@ -1,6 +1,6 @@
-import userModel from './models/user.model.js'
+import userModel from '../models/user.model.js'
 
-class UserService {
+class UserDao {
 	constructor() {
 		this.model = userModel;
 		
@@ -23,5 +23,5 @@ class UserService {
 	}
 }
 
-const userService = new UserService();
-export default userService;
+const userDao = new UserDao();
+export default userDao;

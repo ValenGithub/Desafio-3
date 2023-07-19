@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { Server } from "socket.io";
-import productService from '../dao/product.service.js';
+import productController from '../controllers/product.controller.js'
 
 const productsRouter = Router();
 
@@ -11,7 +11,7 @@ const io = server.io;
 
 productsRouter.get('/', async (req, res) => {
 	try {
-		const products = await productService.obtenerProductos();
+		const products = await productController.obtenerProductos();
 		res.send(products);
 	} catch (err) {
 		res.status(500).send({ err });
@@ -21,8 +21,8 @@ productsRouter.get('/', async (req, res) => {
 
 productsRouter.post('/', async (req, res) => {
 	try {
-		const product = await productService.agregarProducto(req.body);
-		req.io.emit("updatedProducts", await req.productService.obtenerProductos());
+		const product = await productController.agregarProducto(req.body);
+		req.io.emit("updatedProducts", await req.productController.obtenerProductos());
 		res.status(201).send(product);
 	} catch (err) {
 		res.status(500).send({ err });
@@ -32,8 +32,8 @@ productsRouter.post('/', async (req, res) => {
 productsRouter.put('/:pid', async (req, res) => {
 	const pid = req.params.pid;
 	try {
-		const product = await productService.actualizarProducto(pid, req.body);
-		req.io.emit("updatedProducts", await req.productService.obtenerProductos());
+		const product = await productController.actualizarProducto(pid, req.body);
+		req.io.emit("updatedProducts", await req.productController.obtenerProductos());
 		res.status(201).send(product);
 	} catch (err) {
 		res.status(500).send({ err });
@@ -43,8 +43,8 @@ productsRouter.put('/:pid', async (req, res) => {
 productsRouter.delete('/:pid', async (req, res) => {
 	const pid = req.params.pid;
 	try {
-		await productService.eliminarProducto(pid);
-		req.io.emit("updatedProducts", await req.productService.obtenerProductos());
+		await productController.eliminarProducto(pid);
+		req.io.emit("updatedProducts", await req.productController.obtenerProductos());
 		res.sendStatus(204);
 	} catch (err) {
 		res.status(500).send({ err });
@@ -53,7 +53,7 @@ productsRouter.delete('/:pid', async (req, res) => {
 
 productsRouter.get('/:pid', async (req, res) => {
   try {
-    let productoSolicitado = await productService.obtenerProductoById(req.params.pid);
+    let productoSolicitado = await productController.obtenerProductoById(req.params.pid);
     res.send({ producto: productoSolicitado });
   } catch (err) {
     res.status(400).send({ err });

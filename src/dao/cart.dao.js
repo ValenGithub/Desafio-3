@@ -1,8 +1,7 @@
-import { cartModel } from '../dao/models/cartModel.js';
-import productModel from '../dao/models/productModel.js';
-import productService from './product.service.js';
+import { cartModel } from '../models/cartModel.js';
+import productModel from '../models/productModel.js';
 
-class cartService {
+class cartDao {
 	constructor() {
 		this.model = cartModel;
 	}
@@ -144,5 +143,5 @@ class cartService {
 	}
 }
 
-const CartService = new cartService();
-export default CartService;
+const CartDao = new cartDao();
+export default CartDao;

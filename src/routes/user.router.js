@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import userService from '../dao/user.service.js';
 import passport from 'passport';
 
 const usersRouter = Router();
@@ -8,7 +7,7 @@ usersRouter.post(
 	'/',
 	passport.authenticate('register'),
 	async (req, res) => {
-		res.redirect('/login');
+		res.redirect('/login');	
 	}
 );
 

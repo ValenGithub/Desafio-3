@@ -1,9 +1,9 @@
 import passport from 'passport';
 import local from 'passport-local';
 import GitHubStrategy from 'passport-github2';
-import userService from '../dao/user.service.js';
+import userController from '../controllers/user.controller.js';
 import { comparePassword, hashPassword } from '../utils/encript.util.js';
-import CartService from '../dao/cart.service.js';
+import CartController from '../controllers/cart.controller.js';
 
 
 
@@ -19,7 +19,7 @@ const inicializePassport = () => {
 
 				try {
 					// recuperar usuario con ese email
-					const user = await userService.getByEmail(username);
+					const user = await userController.getByEmail(username);
 
 					// si existe, devolver error
 					if (user) {
@@ -31,7 +31,7 @@ const inicializePassport = () => {
 					// encriptar password
 					const hashedPassword = await hashPassword(password);
 
-					const newUser = await userService.createUser({
+					const newUser = await userController.createUser({
 						first_name,
 						last_name,
 						email: username,
@@ -55,7 +55,7 @@ const inicializePassport = () => {
 			{ usernameField: 'email' },
 			async (username, password, done) => {
 				try {
-					const user = await userService.getByEmail(username);
+					const user = await userController.getByEmail(username);
 
 					if (!user) {
 						return done(null, false, { message: 'Usuario invalido' });
@@ -66,7 +66,7 @@ const inicializePassport = () => {
 					}
 
 					if (!user.cart) {
-						const newCart = await CartService.agregarCarrito();
+						const newCart = await CartController.agregarCarrito();
 						user.cart = newCart._id;
 						await user.save();
 					}
@@ -90,7 +90,7 @@ const inicializePassport = () => {
 			async (accessToken, refreshToken, profile, done) => {
 				try {
 					console.log(profile);
-					let user = await userService.getByEmail(profile._json.email);
+					let user = await userController.getByEmail(profile._json.email);
 					if (!user) {
 						let newUser = {
 							first_name: profile._json.name,
@@ -99,11 +99,11 @@ const inicializePassport = () => {
 							password: '',
 							img: profile._json.avatar_url,
 						};
-						user = await userService.createUser(newUser);
+						user = await userController.createUser(newUser);
 						done(null, user);
 
 						if (!user.cart) {
-							const newCart = await CartService.agregarCarrito();
+							const newCart = await CartController.agregarCarrito();
 							user.cart = newCart._id;
 							await user.save();
 						}
@@ -123,7 +123,7 @@ const inicializePassport = () => {
 	});
 
     passport.deserializeUser(async (id, done) => {
-        const user = await userService.getUserById(id);
+        const user = await userController.getUserById(id);
         if (user.email === "adminCoder@coder.com") {
             const adminUser = { ...user, role: "admin" };
             done(null, adminUser);

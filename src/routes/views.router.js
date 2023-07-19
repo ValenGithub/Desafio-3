@@ -1,6 +1,6 @@
 import Router from "express";
-import productService from "../dao/product.service.js";
-import CartService from "../dao/cart.service.js";
+import productController from "../controllers/product.controller.js"
+import cartController from "../controllers/cart.controller.js";
 import { isAuth, isGuest } from '../middlewares/auth.js';
 
 const viewsRouter = Router();
@@ -12,7 +12,7 @@ const viewsRouter = Router();
 
 viewsRouter.get("/products", async (req, res) => {
   	const { limit, page, sort, query } = req.query;
-	const data = await productService.obtenerProductosPaginados(
+	const data = await productController.obtenerProductosPaginados(
 		limit,
 		page,
 		sort,
@@ -23,7 +23,7 @@ viewsRouter.get("/products", async (req, res) => {
 });
 
 viewsRouter.get("/realtimeproducts", async (req, res) => {
-  const products = await productService.obtenerProductos();
+  const products = await productController.obtenerProductos();
   res.render('realTimeProducts', { renderProdList: products });
 });
 
@@ -32,7 +32,7 @@ viewsRouter.get('/chat', async (req, res) => {
 });
 
 viewsRouter.get('/carts/:cid', async (req, res) => {
-  const renderCart = await CartService.obtenerCarritoById(req.params.cid);
+  const renderCart = await cartController.obtenerCarritoById(req.params.cid);
   console.log('Datos del carrito:', renderCart);
 	res.render('cart', { renderCart });
 });
@@ -48,7 +48,7 @@ viewsRouter.get('/register', (req, res) => {
 
 viewsRouter.get('/login', (req, res) => {
 	if (req.isAuthenticated()) {
-		// Si ya hay una sesión activa, redirigir al usuario a otra página, como su perfil
+		// Si ya hay una sesión activa, redirigir al usuario a su perfil
 		return res.redirect('/');
 	}
 
@@ -61,7 +61,7 @@ viewsRouter.get('/', isAuth, (req, res) => {
 	const user = { ...req.session.user };
 	delete user.password;
 	if (!req.isAuthenticated()) {
-		// Si ya hay una sesión activa, redirigir al usuario a otra página, como su perfil
+		// Si ya hay una sesión activa, redirigir al usuario a su perfil
 		return res.redirect('/login');
 	}
 	try{

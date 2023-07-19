@@ -7,14 +7,13 @@ import { usersRouter } from './routes/user.router.js';
 import exphbs from "express-handlebars";
 import viewsRouter from "./routes/views.router.js"
 import { Server } from "socket.io";
-import productService from './dao/product.service.js';
+import productController from './controllers/product.controller.js'
 import MessageService from './dao/message.service.js';
 import mongoose from 'mongoose';
-import CartService from './dao/cart.service.js';
+import CartController from './controllers/cart.controller.js';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
-import userService from './dao/user.service.js';
 import passport from 'passport';
 import inicializePassport from './config/passport.config.js';
 import sessionsRouter from './routes/sessions.router.js';
@@ -66,10 +65,10 @@ inicializePassport();
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', viewsRouter);
+app.use('/', viewsRouter); 
 
 app.use((req, res, next) => {
-  req.productService = productService; // Pasamos el objeto productManager a cada solicitud
+  req.productController = productController; // Pasamos el objeto productManager a cada solicitud
   req.io = io; // Pasamos el objeto io a cada solicitud
   next();
 });
@@ -90,18 +89,18 @@ const httpServer = app.listen(8080, () => {
 });
 const io = new Server(httpServer);
 const messageService = new MessageService(io);
-  
+ 
 io.on("connection", async (socket) => {
   try {
     console.log("New client connected!");
 
-    socket.emit("productList", await productService.obtenerProductos());
+    socket.emit("productList", await productController.obtenerProductos());
     socket.emit('messages', await messageService.obtenerMensajes());
   
     socket.on('agregarProducto', async ({ cartId, productId }) => {
       try {
-        await CartService.agregarProductoCarrito(cartId,productId);
-        let cart = await CartService.obtenerCarritoById(cartId);
+        await CartController.agregarProductoCarrito(cartId,productId);
+        let cart = await CartController.obtenerCarritoById(cartId);
         io.emit('Cartproducts', cart );
       } catch (error) {
         console.log(error)
