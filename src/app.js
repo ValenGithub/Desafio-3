@@ -17,6 +17,7 @@ import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import inicializePassport from './config/passport.config.js';
 import sessionsRouter from './routes/sessions.router.js';
+import enviroment from './config/enviroment.js'
 
 
 const messages = [];
@@ -31,7 +32,7 @@ app.use(express.static("public"));
 app.engine('handlebars', exphbs.engine());
 app.set('views' , 'views/' );
 app.set('view engine','handlebars');
-
+app.use(cookieParser())
 app.use((req, res, next) => {
   res.locals.layout = 'main'; // Establecer el nombre del layout principal
   next();
@@ -48,8 +49,7 @@ const initializeSession = (req, res, next) => {
 app.use(
 	session({
 		store: MongoStore.create({
-			mongoUrl:
-      'mongodb+srv://valentinomoreschi:vm1013@cluster0.zqlrbgb.mongodb.net/?retryWrites=true&w=majority',
+			mongoUrl: enviroment.DB_LINK_CREATE,
 			mongoOptions: {
 				useNewUrlParser: true,
 			},
@@ -81,11 +81,11 @@ app.use('/api/users', usersRouter);
 app.use('/api/sessions', sessionsRouter);
 
 mongoose.connect(
-	'mongodb+srv://valentinomoreschi:vm1013@cluster0.zqlrbgb.mongodb.net/?retryWrites=true&w=majority'
+	enviroment.DB_LINK
 );
 
-const httpServer = app.listen(8080, () => {
-  console.log("Listening in 8080"); //Check de que el servidor se encuentra funcionando en el puerto 8080.
+const httpServer = app.listen(enviroment.PORT, () => {
+  console.log(`Listening in ${enviroment.PORT}`); //Check de que el servidor se encuentra funcionando en el puerto 8080.
 });
 const io = new Server(httpServer);
 const messageService = new MessageService(io);
