@@ -15,8 +15,8 @@ class ProductController {
         return this.service.obtenerProductos()
     }
 
-    async obtenerProductosPaginados(limit = 10, page = 1, sort = 'asc', query = 'all') {
-        const resulta = await this.service.obtenerProductosPaginados(limit = 10, page = 1, sort = 'asc', query = 'all')
+    async obtenerProductosPaginados(limit, page, sort, query) {
+        const resulta = await this.service.obtenerProductosPaginados(limit, page, sort, query)
         return resulta;
     }
 

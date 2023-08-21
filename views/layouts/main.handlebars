@@ -29,6 +29,10 @@
             >
                 <ul class='navbar-nav ms-auto mb-2 mb-lg-0'>
                     {{#if user}}
+                        <a class="nav-link active" aria-current="page" href="http://localhost:8080/current">Perfil</a>
+                        <a class="nav-link" href="http://localhost:8080/products">Productos</a>
+                        <a class="nav-link user"  href="http://localhost:8080/carts">carrito</a>
+                        <a class="nav-link" href="http://localhost:8080/chat">Formulario</a>
                         <li class='nav-item'>
                             <a
                                 class='nav-link active'
@@ -52,7 +56,13 @@
                                     Cerrar Sesión
                                 </button>
                             </form>
+                            
                         </li>
+                    {{else}}
+                        <div class="navbar-nav">
+                            <a class="nav-link active" aria-current="page" href="http://localhost:8080/register">Registrate</a>
+                            <a class="nav-link active" aria-current="page" href="http://localhost:8080/login">Login</a>
+                        </div>    
                     {{/if}}
                 </ul>
             </div>

@@ -4,10 +4,13 @@ import GitHubStrategy from 'passport-github2';
 import userController from '../controllers/user.controller.js';
 import { comparePassword, hashPassword } from '../utils/encript.util.js';
 import CartController from '../controllers/cart.controller.js';
+import { ExtractJwt, Strategy } from "passport-jwt";
 
 
 
 const LocalStrategy = local.Strategy;
+const jwtStrategy = Strategy;
+const jwtExtract = ExtractJwt;
 
 const inicializePassport = () => {
 	passport.use(
@@ -63,12 +66,6 @@ const inicializePassport = () => {
 
 					if (!comparePassword(user, password)) {
 						return done(null, false, { message: 'Revise los datos ingresados' });
-					}
-
-					if (!user.cart) {
-						const newCart = await CartController.agregarCarrito();
-						user.cart = newCart._id;
-						await user.save();
 					}
 
 					return done(null, user);
@@ -131,6 +128,38 @@ const inicializePassport = () => {
             done(null, user);
         }
     });
+
+	passport.use(
+		'jwt',
+		new jwtStrategy(
+			{
+				jwtFromRequest: jwtExtract.fromExtractors([cookieExtractor]),
+				secretOrKey: 'privatekey',
+			},
+			(payload, done) => {
+				done(null, payload);
+			}
+		),
+		async (payload, done) => {
+			try {
+				return done(null, payload)
+			} catch (error) {
+				done(error)
+			}
+		}
+	)
 };
+
+
+
+const cookieExtractor = (req) => {
+    let token = null;
+    if (req && req.cookies) {
+        token = req.cookies['token']
+    }
+    return token;
+}
+
+
 
 export default inicializePassport;

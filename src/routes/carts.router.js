@@ -7,6 +7,7 @@ const cartsRouter = Router();
 
 cartsRouter.post('/', async (req, res) => {
 	const carrito = req.body;
+	console.log("entro aqui")
 	try {
 		const nuevoCarrito = await CartController.agregarCarrito(carrito);
 		res.status(201).send({ carritos: nuevoCarrito });

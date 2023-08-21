@@ -1,7 +1,8 @@
 import Router from "express";
 import productController from "../controllers/product.controller.js"
 import cartController from "../controllers/cart.controller.js";
-import { isAuth, isGuest } from '../middlewares/auth.js';
+import { isAuth} from '../middlewares/auth.js';
+import { middlewarePassportJwt } from "../middlewares/jwt.middleware.js";
 
 const viewsRouter = Router();
 
@@ -10,16 +11,19 @@ const viewsRouter = Router();
 //   res.render("index",  { renderProdList: products } );
 // });
 
-viewsRouter.get("/products", async (req, res) => {
-  	const { limit, page, sort, query } = req.query;
+viewsRouter.get("/products", middlewarePassportJwt, async (req, res) => {
+	const user = req.user
+	const { limit, page, sort, query } = req.query;
 	const data = await productController.obtenerProductosPaginados(
 		limit,
 		page,
 		sort,
     query
 	);
-
-	res.render('products', data );
+	
+	data.user = user;
+	console.log(data)
+	res.render('products', data);
 });
 
 viewsRouter.get("/realtimeproducts", async (req, res) => {
@@ -27,14 +31,19 @@ viewsRouter.get("/realtimeproducts", async (req, res) => {
   res.render('realTimeProducts', { renderProdList: products });
 });
 
-viewsRouter.get('/chat', async (req, res) => {
-	res.render('chat');
+viewsRouter.get('/chat',middlewarePassportJwt, async (req, res) => {
+	const user = req.user;
+	res.render('chat', user);
 });
 
-viewsRouter.get('/carts/:cid', async (req, res) => {
-  const renderCart = await cartController.obtenerCarritoById(req.params.cid);
-  console.log('Datos del carrito:', renderCart);
-	res.render('cart', { renderCart });
+viewsRouter.get('/carts',middlewarePassportJwt, async (req, res) => {
+	const user = req.user;	
+	console.log(user)
+	const renderCart = await cartController.obtenerCarritoById(req.params.cid);
+	console.log('Datos del carrito:', renderCart);
+	res.render('cart', {
+		user
+	  });
 });
 
 
@@ -47,7 +56,7 @@ viewsRouter.get('/register', (req, res) => {
 });
 
 viewsRouter.get('/login', (req, res) => {
-	if (req.isAuthenticated()) {
+	if (req.isAuthenticated() && req.session.user?.first_Name) {
 		// Si ya hay una sesión activa, redirigir al usuario a su perfil
 		return res.redirect('/');
 	}
@@ -57,47 +66,17 @@ viewsRouter.get('/login', (req, res) => {
 	});
 });
 
-viewsRouter.get('/', isAuth, (req, res) => {
-	const user = { ...req.session.user };
-	delete user.password;
-	if (!req.isAuthenticated()) {
-		// Si ya hay una sesión activa, redirigir al usuario a su perfil
-		return res.redirect('/login');
-	}
-	try{
-		res.render('index', {user});
-	}catch(err){
-		res.status(500).send(err)
-	}	
+viewsRouter.get('/current', middlewarePassportJwt, (req, res) => {
+	const user = req.user
+	console.log(user)
+	res.render('index', {
+		title: 'Perfil de Usuario',
+		message: 'Private route',
+		user
+	  });
 });
 
-viewsRouter.get('/admin', (req, res) => {
-	const user = { ...req.session.user };
-	delete user.password;
 
-	if (req.user.role === "admin") {
-		// El usuario tiene el rol de "admin"
-		// Realiza alguna acción para un usuario administrador
-		res.render('admin', {user});
-	  } else {
-		// El usuario no tiene el rol de "admin"
-		// Realiza alguna acción para un usuario no administrador
-		res.redirect('/')
-	  }
-});
 
-viewsRouter.get('/current', isAuth, (req, res) => {
-	const user = { ...req.session.user };
-	delete user.password;
-	if (!req.isAuthenticated()) {
-		// Si ya hay una sesión activa, redirigir al usuario a otra página, como su perfil
-		return res.redirect('/login');
-	}
-	try{
-		res.render('index', {user});
-	}catch(err){
-		res.status(500).send(err)
-	}	
-});
 
 export default viewsRouter;

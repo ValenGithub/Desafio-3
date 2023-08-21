@@ -11,8 +11,8 @@ export default class ProductService {
         return this.dao.obtenerProductos()
     }
   
-    async obtenerProductosPaginados(limit = 10, page = 1, sort = 'asc', query = 'all') {
-      const result = await this.dao.obtenerProductosPaginados(limit = 10, page = 1, sort = 'asc', query = 'all');
+    async obtenerProductosPaginados(limit, page , sort , query) {
+      const result = await this.dao.obtenerProductosPaginados(limit, page , sort, query );
       return result;
     }
   

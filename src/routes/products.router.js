@@ -11,7 +11,7 @@ const io = server.io;
 
 productsRouter.get('/', async (req, res) => {
 	try {
-		const products = await productController.obtenerProductos();
+		const products = await productController.obtenerProductosPaginados();
 		res.send(products);
 	} catch (err) {
 		res.status(500).send({ err });
