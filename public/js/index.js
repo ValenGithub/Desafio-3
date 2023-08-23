@@ -21,45 +21,38 @@ async function verifyCart() {
   }
 }
 
+
 verifyCart();
 
 
 
 
+
+
+
+
 // // Obtener todos los botones "agregar al carrito"
-// const agregarProductoBotones = document.querySelectorAll('.btn-add-to-cart');
-// agregarProductoBotones.forEach((boton) => {
-//   boton.addEventListener('click', (e) => {
-//     const productId = e.target.dataset.productId;
+const agregarProductoBotones = document.querySelectorAll('.btn-add-to-cart');
 
-//     // Enviar el ID del carrito y el ID del producto al servidor a través de Socket.IO
-//     socket.emit('agregarProducto', { cartId, productId });
-//   });
-// });
+agregarProductoBotones.forEach((boton) => {
+  boton.addEventListener('click', async (e) => {
+    const productId = e.target.dataset.productId;
+    async function addProductCart() {
+      const existingCartId = localStorage.getItem('cartId');
+      try {
+        const response = await fetch(`/api/carts/${existingCartId}/product/${productId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        console.log(data)
 
-// socket.on('Cartproducts', (data) => {
-//   const bodyElement = document.getElementById("bodyproducts");
-//   const products = data.products;
-//   let html = '';
-
-//   products.forEach((item) => {
-//     const product = item.product;
-//     // Construir el HTML para cada producto
-//     const productHtml = `
-//       <div class="product">
-//         <h2>${product.title}</h2>
-//         <p>Description: ${product.description}</p>
-//         <p>Price: $${product.price}</p>
-//         <p>Stock: ${product.stock}</p>
-//         <p>Category: ${product.category}</p>
-//       </div>
-//     `;
-
-//     // Agregar el HTML del producto al HTML acumulativo
-//     html += productHtml;
-//   });
-
-//   // Insertar el HTML acumulativo en el elemento <body>
-//   bodyElement.innerHTML = html;
-// });
-  
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  addProductCart()
+  });
+});

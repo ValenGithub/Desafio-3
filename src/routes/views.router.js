@@ -1,7 +1,7 @@
 import Router from "express";
 import productController from "../controllers/product.controller.js"
 import cartController from "../controllers/cart.controller.js";
-import { isAuth} from '../middlewares/auth.js';
+import { isAuth} from '../middlewares/auth.middleware.js';
 import { middlewarePassportJwt } from "../middlewares/jwt.middleware.js";
 
 const viewsRouter = Router();
@@ -22,7 +22,6 @@ viewsRouter.get("/products", middlewarePassportJwt, async (req, res) => {
 	);
 	
 	data.user = user;
-	console.log(data)
 	res.render('products', data);
 });
 
@@ -38,7 +37,6 @@ viewsRouter.get('/chat',middlewarePassportJwt, async (req, res) => {
 
 viewsRouter.get('/carts',middlewarePassportJwt, async (req, res) => {
 	const user = req.user;	
-	console.log(user)
 	const renderCart = await cartController.obtenerCarritoById(req.params.cid);
 	console.log('Datos del carrito:', renderCart);
 	res.render('cart', {

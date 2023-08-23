@@ -1,11 +1,13 @@
+
 export function isAuth(req, res, next) {
-	//console.log(req.session)
-	//console.log(req.session.user)
-	if (req.session.user) {
-		next();
-	} else {
-		res.redirect('/login');
+
+	if (req.user.rol === 'ADMIN') {
+		console.log(`${req.user.rol} no autorizado`);
+		return res.sendStatus(500)
 	}
+	
+	next();
+
 }
 
 export function isGuest(req, res, next) {

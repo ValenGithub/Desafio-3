@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { Server } from "socket.io";
 import messageService from '../dao/message.service.js';
+import { middlewarePassportJwt } from '../middlewares/jwt.middleware.js';
+import { isAuth } from '../middlewares/auth.middleware.js';
 
 const messageRouter = Router();
 
@@ -8,7 +10,7 @@ const messageRouter = Router();
 const server = new Server();
 const io = server.io;
 
-messageRouter.get('/', async (req, res) => {
+messageRouter.get('/', middlewarePassportJwt, isAuth, async (req, res) => {
 	try {
 		const messages = await messageService.obtenerMensajes()
 		res.send(messages);

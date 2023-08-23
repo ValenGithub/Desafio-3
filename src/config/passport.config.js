@@ -5,6 +5,7 @@ import userController from '../controllers/user.controller.js';
 import { comparePassword, hashPassword } from '../utils/encript.util.js';
 import CartController from '../controllers/cart.controller.js';
 import { ExtractJwt, Strategy } from "passport-jwt";
+import UserDTO from "../dto/user.dto.js";
 
 
 
@@ -21,6 +22,11 @@ const inicializePassport = () => {
 				const { first_name, last_name, img } = req.body;
 
 				try {
+					if (!first_name || !last_name || !username) {
+                        return done(null, false, {
+                            message: 'Todos los campos deben estar llenos',
+                        });
+                    }
 					// recuperar usuario con ese email
 					const user = await userController.getByEmail(username);
 
@@ -34,13 +40,20 @@ const inicializePassport = () => {
 					// encriptar password
 					const hashedPassword = await hashPassword(password);
 
-					const newUser = await userController.createUser({
-						first_name,
-						last_name,
-						email: username,
-						password: hashedPassword,
-						img,
-					});
+					const userdto = new UserDTO({
+                        first_name,
+                        last_name,
+                        username,
+                        password: hashedPassword,
+                        img,
+                    });
+						
+					if (userdto.email === "eladmin@admin.com") {
+                        userdto.rol = "ADMIN";
+                    }
+
+					const newUser = await userController.createUser(userdto);
+					
 
 					return done(null, newUser);
 				} catch (error) {
@@ -82,11 +95,11 @@ const inicializePassport = () => {
 			{
 				clientID: 'Iv1.709563a70cd440d4',
 				clientSecret: '0bb1d1d483929947762e56d399e9345d79d649be',
-				callbackURL: 'http://localhost:8080/api/sessions/githubcallback',
+				callbackURL: 'http://localhost:8080/api/users/githubcallback',
 			},
 			async (accessToken, refreshToken, profile, done) => {
 				try {
-					console.log(profile);
+					
 					let user = await userController.getByEmail(profile._json.email);
 					if (!user) {
 						let newUser = {

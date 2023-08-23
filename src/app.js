@@ -16,7 +16,6 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';
 import inicializePassport from './config/passport.config.js';
-import sessionsRouter from './routes/sessions.router.js';
 import enviroment from './config/enviroment.js'
 
 
@@ -78,7 +77,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/api/chat', messageRouter);
 app.use('/api/users', usersRouter);
-app.use('/api/sessions', sessionsRouter);
+
 
 mongoose.connect(
 	enviroment.DB_LINK

@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { Server } from "socket.io";
 import productController from '../controllers/product.controller.js'
+import { isAuth } from '../middlewares/auth.middleware.js';
+import { middlewarePassportJwt } from '../middlewares/jwt.middleware.js';
 
 const productsRouter = Router();
 
@@ -19,7 +21,7 @@ productsRouter.get('/', async (req, res) => {
 });
 
 
-productsRouter.post('/', async (req, res) => {
+productsRouter.post('/',  async (req, res) => {
 	try {
 		const product = await productController.agregarProducto(req.body);
 		req.io.emit("updatedProducts", await req.productController.obtenerProductos());
@@ -29,7 +31,7 @@ productsRouter.post('/', async (req, res) => {
 	}
 });
 
-productsRouter.put('/:pid', async (req, res) => {
+productsRouter.put('/:pid',  async (req, res) => {
 	const pid = req.params.pid;
 	try {
 		const product = await productController.actualizarProducto(pid, req.body);

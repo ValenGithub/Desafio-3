@@ -40,6 +40,30 @@ usersRouter.post(
 	
 );
 
+usersRouter.get(
+	'/github',
+	passport.authenticate('github', { scope: ['user:email'] }),
+	async (req, res) => {}
+);
+
+usersRouter.get(
+	'/githubcallback',
+	passport.authenticate('github', { failureRedirect: '/login' }),
+	(req, res) => {
+		const user = req.user;
+		const token = generateToken(user)
+		
+		
+		res.cookie('token', token, {
+			httpOnly: true,
+			maxAge: 60000000,
+			
+		}).redirect('/products')
+		
+	}
+);
+
+
 usersRouter.post('/logout', (req, res) => {
 	req.session.destroy(); 
 	res.redirect('/login');

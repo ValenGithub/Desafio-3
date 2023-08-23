@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import CartController from '../controllers/cart.controller.js';
+import { middlewarePassportJwt } from '../middlewares/jwt.middleware.js';
+import { isAuth } from '../middlewares/auth.middleware.js';
 
 const cartsRouter = Router();
 //const cartManager = new CartManager();
 
 
-cartsRouter.post('/', async (req, res) => {
+cartsRouter.post('/', middlewarePassportJwt, isAuth, async (req, res) => {
 	const carrito = req.body;
 	console.log("entro aqui")
 	try {
@@ -32,9 +34,10 @@ cartsRouter.get('/:cid', async (req, res) => {
 });
 
 
-cartsRouter.post('/:cid/product/:pid', async (req, res) => {
+cartsRouter.post('/:cid/product/:pid',middlewarePassportJwt, isAuth, async (req, res) => {
 	const cartId = req.params.cid;
 	const productId = req.params.pid;
+	console.log(productId, cartId, "agregue esto")
 	try {
 		const productAdded = await CartController.agregarProductoCarrito(
 			cartId,
@@ -56,7 +59,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
 		}
 	});
 
-	cartsRouter.delete('/:cid/products/:pid', async (req, res) => {
+	cartsRouter.delete('/:cid/products/:pid', middlewarePassportJwt, isAuth, async (req, res) => {
 		const cid = req.params.cid;
 		const pid = req.params.pid
 		try {
@@ -67,7 +70,7 @@ cartsRouter.post('/:cid/product/:pid', async (req, res) => {
 		}
 	});
 
-	cartsRouter.put('/:cid/products/:pid', async (req, res) => {
+	cartsRouter.put('/:cid/products/:pid', middlewarePassportJwt, isAuth, async (req, res) => {
 		const cid = req.params.cid;
 		const pid = req.params.pid;
 		const newQuantity = req.body.quantity;
