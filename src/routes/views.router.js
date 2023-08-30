@@ -18,7 +18,7 @@ viewsRouter.get("/products", middlewarePassportJwt, async (req, res) => {
 		limit,
 		page,
 		sort,
-    query
+    	query
 	);
 	
 	data.user = user;

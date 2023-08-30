@@ -1,8 +1,9 @@
-const existingCartId = localStorage.getItem('cartId');
+
+const cartId = localStorage.getItem('cartClient');
 
 async function verifyCart() {
-  if (existingCartId !== null) {
-    console.log(existingCartId, "el cart creado anteriormentessssss");
+  if (cartId !== null) {
+    console.log(cartId, "el cart creado anteriormentessssss");
   } else {
     try {
       const response = await fetch(`/api/carts`, {
@@ -12,8 +13,7 @@ async function verifyCart() {
         },
       });
       const data = await response.json();
-      console.log(data)
-      localStorage.setItem('cartId', data._id);
+      localStorage.setItem('cartClient', data._id);
 
     } catch (error) {
       console.error("Error:", error);
@@ -38,9 +38,10 @@ agregarProductoBotones.forEach((boton) => {
   boton.addEventListener('click', async (e) => {
     const productId = e.target.dataset.productId;
     async function addProductCart() {
-      const existingCartId = localStorage.getItem('cartId');
+      const cartId = localStorage.getItem('cartClient');
+      console.log(cartId)
       try {
-        const response = await fetch(`/api/carts/${existingCartId}/product/${productId}`, {
+        const response = await fetch(`/api/carts/${cartId}/product/${productId}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

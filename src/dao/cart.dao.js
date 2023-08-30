@@ -7,7 +7,9 @@ class cartDao {
 	}
 
 	async agregarCarrito() {
-		return await this.model.create({ products: [] });
+		const cart = await this.model.create({ products: [] });
+		console.log(cart)
+		return cart
 	}
 
 	async obtenerCarritos() {

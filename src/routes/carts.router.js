@@ -12,7 +12,7 @@ cartsRouter.post('/', middlewarePassportJwt, isAuth, async (req, res) => {
 	console.log("entro aqui")
 	try {
 		const nuevoCarrito = await CartController.agregarCarrito(carrito);
-		res.status(201).send({ carritos: nuevoCarrito });
+		res.status(201).send( nuevoCarrito );
 	} catch (err) {
 		res.status(500).send({ err });
 	}
@@ -59,7 +59,7 @@ cartsRouter.post('/:cid/product/:pid',middlewarePassportJwt, isAuth, async (req,
 		}
 	});
 
-	cartsRouter.delete('/:cid/products/:pid', middlewarePassportJwt, isAuth, async (req, res) => {
+	cartsRouter.delete('/:cid/product/:pid', middlewarePassportJwt, isAuth, async (req, res) => {
 		const cid = req.params.cid;
 		const pid = req.params.pid
 		try {
